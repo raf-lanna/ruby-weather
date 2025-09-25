@@ -27,39 +27,24 @@
 
   <section class="weather-card__body">
     <div class="weather-card__temperature">
-      <% if forecast.temperature_c.present? || forecast.temperature_f.present? %>
+      <% if forecast.temperature_f.present? %>
         <p class="weather-card__temp-main">
-          <% if forecast.temperature_c.present? %>
-            <span><%= number_with_precision(forecast.temperature_c, precision: 1) %> °C</span>
-          <% end %>
-          <% if forecast.temperature_f.present? %>
-            <span><%= number_with_precision(forecast.temperature_f, precision: 1) %> °F</span>
-          <% end %>
+          <span><%= number_with_precision(forecast.temperature_f, precision: 1) %> °F</span>
         </p>
       <% end %>
 
-      <% if forecast.max_temperature_c.present? || forecast.min_temperature_c.present? %>
+      <% if forecast.max_temperature_f.present? || forecast.min_temperature_f.present? %>
         <dl class="weather-card__range">
-          <% if forecast.max_temperature_c.present? %>
-            <div>
+          <% if forecast.max_temperature_f.present? %>
+            <div class="weather-card__range-item">
               <dt>High</dt>
-              <dd>
-                <%= number_with_precision(forecast.max_temperature_c, precision: 1) %> °C
-                <% if forecast.max_temperature_f.present? %>
-                  (<%= number_with_precision(forecast.max_temperature_f, precision: 1) %> °F)
-                <% end %>
-              </dd>
+              <dd><span class="weather-pill"><%= number_with_precision(forecast.max_temperature_f, precision: 1) %> °F</span></dd>
             </div>
           <% end %>
-          <% if forecast.min_temperature_c.present? %>
-            <div>
+          <% if forecast.min_temperature_f.present? %>
+            <div class="weather-card__range-item">
               <dt>Low</dt>
-              <dd>
-                <%= number_with_precision(forecast.min_temperature_c, precision: 1) %> °C
-                <% if forecast.min_temperature_f.present? %>
-                  (<%= number_with_precision(forecast.min_temperature_f, precision: 1) %> °F)
-                <% end %>
-              </dd>
+              <dd><span class="weather-pill"><%= number_with_precision(forecast.min_temperature_f, precision: 1) %> °F</span></dd>
             </div>
           <% end %>
         </dl>
@@ -82,7 +67,8 @@
           <dt>Wind</dt>
           <dd>
             <% if forecast.wind_kph.present? %>
-              <span><%= number_with_precision(forecast.wind_kph, precision: 1) %> km/h</span>
+              <% wind_mph = forecast.wind_kph.to_f * 0.621371 %>
+              <span><%= number_with_precision(wind_mph, precision: 1) %> mph</span>
             <% end %>
             <% if forecast.wind_direction.present? %>
               <span><%= forecast.wind_direction %></span>

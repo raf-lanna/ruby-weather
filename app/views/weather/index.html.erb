@@ -3,7 +3,7 @@
     <p class="weather-hero__badge">Powered by WeatherAPI.com</p>
     <h1>Check the latest conditions in seconds</h1>
     <p class="weather-hero__lead">
-      Enter any valid US ZIP code to view live conditions including temperature, wind, humidity, and more — refreshed directly from WeatherAPI.com.
+      Enter any valid US ZIP code or city name to view live conditions including temperature, wind, humidity, and more — refreshed directly from WeatherAPI.com.
     </p>
 
     <ul class="weather-hero__highlights">
@@ -44,7 +44,7 @@
       </div>
 
       <div class="zip-form__group">
-        <label class="zip-form__label" for="days-slider">Forecast day</label>
+        <label class="zip-form__label" for="days-slider">Forecast day (up to 5 days)</label>
         <div class="zip-form__slider-wrap">
           <input type="range"
                  id="days-slider"
@@ -55,10 +55,6 @@
                  class="zip-form__slider"
                  data-action="input->weather-form#updateDaysLabel"
                  data-weather-form-target="days">
-          <div class="zip-form__slider-labels">
-            <span>Today</span>
-            <span>+5 days</span>
-          </div>
           <p class="zip-form__slider-value" data-weather-form-target="daysValue" data-current-value="<%= @days || 0 %>">Forecast for today</p>
         </div>
       </div>
