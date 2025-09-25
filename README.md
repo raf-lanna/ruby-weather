@@ -1,24 +1,7 @@
 # README
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+* Ruby version 7.2.2
 
-Things you may want to cover:
+* Create an acount on weatherapi.com end put it on the environment variable (either beash or .env) using the name WEATHER_API_KEY
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* Acess http://127.0.0.1:3000/weather 
