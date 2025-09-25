@@ -48,4 +48,3 @@ class WeatherController < ApplicationController
       (zip_code.match?(/\A\d{5}\z/) || zip_code.match?(/\A\d{5}-\d{4}\z/))
   end
 end
-
