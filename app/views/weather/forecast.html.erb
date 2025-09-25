@@ -1,0 +1,21 @@
+<div class="weather-forecast">
+  <div class="weather-forecast__header">
+    <h1>Weather forecast</h1>
+    <%= link_to "Back to search", weather_path, class: "weather-back-link" %>
+  </div>
+
+  <% if @zip_code.present? %>
+    <p>Showing forecast for ZIP code <strong><%= @zip_code %></strong>.</p>
+  <% end %>
+
+  <% if flash[:alert] %>
+    <p class="alert"><%= flash[:alert] %></p>
+  <% end %>
+
+  <% if @forecast.present? %>
+    <%= render partial: "weather/weather_api_com_partial", locals: { forecast: @forecast } %>
+  <% elsif flash[:alert].blank? %>
+    <p class="alert">No forecast data was returned for this ZIP code.</p>
+  <% end %>
+</div>
+

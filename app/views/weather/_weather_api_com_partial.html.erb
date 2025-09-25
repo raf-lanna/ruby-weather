@@ -1,0 +1,88 @@
+<div class="weather-card">
+  <header class="weather-card__header">
+    <div class="weather-card__location">
+      <h2><%= forecast.location_label %></h2>
+      <% if forecast.local_time.present? %>
+        <p class="weather-card__time">
+          Local time: <time datetime="<%= forecast.local_time %>"><%= forecast.local_time %></time>
+        </p>
+      <% end %>
+    </div>
+    <% if forecast.condition_icon_url.present? %>
+      <figure class="weather-card__icon">
+        <img src="<%= forecast.condition_icon_url %>" alt="<%= forecast.condition_text %>">
+        <% if forecast.condition_text.present? %>
+          <figcaption><%= forecast.condition_text %></figcaption>
+        <% end %>
+      </figure>
+    <% elsif forecast.condition_text.present? %>
+      <p class="weather-card__condition"><%= forecast.condition_text %></p>
+    <% end %>
+  </header>
+
+  <section class="weather-card__body">
+    <div class="weather-card__temperature">
+      <% if forecast.temperature_c.present? || forecast.temperature_f.present? %>
+        <p class="weather-card__temp-main">
+          <% if forecast.temperature_c.present? %>
+            <span><%= number_with_precision(forecast.temperature_c, precision: 1) %> °C</span>
+          <% end %>
+          <% if forecast.temperature_f.present? %>
+            <span><%= number_with_precision(forecast.temperature_f, precision: 1) %> °F</span>
+          <% end %>
+        </p>
+      <% end %>
+      <% unless forecast.daytime?.nil? %>
+        <p class="weather-card__daylight"><%= forecast.daylight_label %></p>
+      <% end %>
+    </div>
+
+    <dl class="weather-card__metrics">
+      <% if forecast.humidity.present? %>
+        <div>
+          <dt>Humidity</dt>
+          <dd><%= forecast.humidity %>%</dd>
+        </div>
+      <% end %>
+      <% if forecast.wind_kph.present? || forecast.wind_direction.present? %>
+        <div>
+          <dt>Wind</dt>
+          <dd>
+            <% if forecast.wind_kph.present? %>
+              <span><%= number_with_precision(forecast.wind_kph, precision: 1) %> km/h</span>
+            <% end %>
+            <% if forecast.wind_direction.present? %>
+              <span><%= forecast.wind_direction %></span>
+            <% end %>
+          </dd>
+        </div>
+      <% end %>
+      <% if forecast.precip_inches.present? %>
+        <div>
+          <dt>Precipitation</dt>
+          <dd><%= number_with_precision(forecast.precip_inches, precision: 2) %> in</dd>
+        </div>
+      <% end %>
+      <% if forecast.visibility_miles.present? %>
+        <div>
+          <dt>Visibility</dt>
+          <dd><%= number_with_precision(forecast.visibility_miles, precision: 1) %> miles</dd>
+        </div>
+      <% end %>
+      <% if forecast.uv_index.present? %>
+        <div>
+          <dt>UV Index</dt>
+          <dd><%= number_with_precision(forecast.uv_index, precision: 1) %></dd>
+        </div>
+      <% end %>
+      <% if forecast.last_updated.present? %>
+        <div>
+          <dt>Updated</dt>
+          <dd><%= forecast.last_updated %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </section>
+</div>
+
+
