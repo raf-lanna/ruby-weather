@@ -14,15 +14,15 @@
   </section>
 
   <section class="weather-form-card">
-    <h2>Search by ZIP code</h2>
-    <p class="weather-form-card__hint">We currently support US ZIP codes using either 5 digits or ZIP+4.</p>
+    <h2>Search by ZIP code or city</h2>
+    <p class="weather-form-card__hint">Enter a US ZIP code (12345 ou 12345-6789) ou o nome de uma cidade reconhecida pela WeatherAPI.</p>
 
     <%= form_with url: weather_forecast_path, method: :get, local: true, data: { controller: "weather-form", action: "submit->weather-form#validate" }, html: { class: "zip-form" } do |form| %>
       <div class="zip-form__group">
         <%= form.label :zip_code, "US ZIP code", class: "zip-form__label" %>
         <div class="zip-form__input-wrap">
           <%= form.text_field :zip_code,
-                              placeholder: "e.g. 90001 or 90210-1234",
+                              placeholder: "e.g. 90001 ou 94105-1234",
                               value: @zip_code,
                               inputmode: "numeric",
                               class: "zip-form__input",
@@ -31,7 +31,20 @@
         </div>
       </div>
 
-      <p class="zip-form__notice">Your ZIP code is only used for this lookup and never stored.</p>
+      <div class="zip-form__group">
+        <%= form.label :city, "City name", class: "zip-form__label" %>
+        <div class="zip-form__input-wrap zip-form__input-wrap--text">
+          <%= form.text_field :city,
+                              placeholder: "e.g. Los Angeles, CA",
+                              value: @city,
+                              class: "zip-form__input zip-form__input--text",
+                              data: { "weather-form-target": "city" } %>
+          <span class="zip-form__or">or</span>
+          <button type="submit" class="zip-form__submit zip-form__submit--secondary">Search city</button>
+        </div>
+      </div>
+
+      <p class="zip-form__notice">We send the city or ZIP code you provide directly to WeatherAPI.com and do not store it.</p>
     <% end %>
   </section>
 </div>

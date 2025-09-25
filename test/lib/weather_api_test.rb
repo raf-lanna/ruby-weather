@@ -22,7 +22,7 @@ class WeatherApiTest < ActiveSupport::TestCase
     response.instance_variable_set(:@body, body)
 
     Net::HTTP.stub :get_response, response do
-      result = @api.fetch_current(zip_code: "90001")
+      result = @api.fetch_current(query: "90001")
 
       assert_equal "Los Angeles", result.dig("location", "name")
       assert_in_delta 22.1, result.dig("current", "temp_c")
@@ -43,7 +43,7 @@ class WeatherApiTest < ActiveSupport::TestCase
 
     Net::HTTP.stub :get_response, response do
       error = assert_raises(WeatherApi::Error) do
-        @api.fetch_current(zip_code: "99999")
+        @api.fetch_current(query: "99999")
       end
 
       assert_equal 1006, error.code
@@ -59,7 +59,7 @@ class WeatherApiTest < ActiveSupport::TestCase
 
     Net::HTTP.stub :get_response, response do
       error = assert_raises(WeatherApi::Error) do
-        @api.fetch_current(zip_code: "90001")
+        @api.fetch_current(query: "90001")
       end
 
       assert_nil error.code
@@ -72,7 +72,7 @@ class WeatherApiTest < ActiveSupport::TestCase
     ENV.delete("WEATHER_API_KEY")
 
     assert_raises(KeyError) do
-      WeatherApi.new.fetch_current(zip_code: "90001")
+      WeatherApi.new.fetch_current(query: "90001")
     end
   ensure
     ENV["WEATHER_API_KEY"] = @original_api_key || "test-key"

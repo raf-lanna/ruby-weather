@@ -3,7 +3,7 @@ class ApiService
     @weather_client = weather_client
   end
 
-  def fetch_weather(zip_code:)
-    @weather_client.fetch_current(zip_code: zip_code)
+  def fetch_weather(query:)
+    @weather_client.fetch_current(query: query)
   end
 end

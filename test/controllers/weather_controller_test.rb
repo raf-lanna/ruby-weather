@@ -40,12 +40,36 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
       }
     }
 
-    WeatherApi.any_instance.stub :fetch_current, weather_payload do
+    WeatherApi.any_instance.stub :fetch_current, ->(query:) {
+      assert_equal "90001", query
+      weather_payload
+    } do
       get weather_forecast_path, params: { zip_code: "90001" }
 
       assert_response :success
       assert_select "h1", text: "Weather forecast"
       assert_select ".weather-card__location h2", text: /Los Angeles/
+    end
+  end
+
+  test "GET /weather/forecast aceita busca por cidade" do
+    weather_payload = {
+      "location" => {
+        "name" => "Los Angeles",
+        "region" => "California",
+        "country" => "United States of America"
+      },
+      "current" => { "temp_c" => 22.0 }
+    }
+
+    WeatherApi.any_instance.stub :fetch_current, ->(query:) {
+      assert_equal "Los Angeles", query
+      weather_payload
+    } do
+      get weather_forecast_path, params: { city: "Los Angeles" }
+
+      assert_response :success
+      assert_match "Showing forecast for city", response.body
     end
   end
 
@@ -56,7 +80,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
       get weather_forecast_path, params: { zip_code: "99999" }
 
       assert_response :not_found
-      assert_match "Não encontramos nenhuma localização", response.body
+      assert_match "Não encontramos nenhuma localização com esses dados", response.body
     end
   end
 
@@ -80,11 +104,11 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "GET /weather/forecast exige zip obrigatório" do
-    get weather_forecast_path, params: { zip_code: "" }
+  test "GET /weather/forecast exige zip ou cidade" do
+    get weather_forecast_path, params: { zip_code: "", city: "" }
 
     assert_response :unprocessable_entity
-    assert_match "Enter a ZIP code", response.body
+    assert_match "Enter a ZIP code or city", response.body
   end
 
   test "GET /weather/forecast rejeita zip com formato inválido" do

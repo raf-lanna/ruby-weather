@@ -2,9 +2,11 @@ import { Controller } from "@hotwired/stimulus";
 
 // Conecta o formulário de CEP para validar o formato no frontend
 export default class extends Controller {
-  static targets = ["zip"];
+  static targets = ["zip", "city"];
 
   formatZip() {
+    if (!this.hasZipTarget) return;
+
     const digits = this.zipTarget.value.replace(/\D/g, "").slice(0, 9);
 
     if (digits.length === 0) {
@@ -22,26 +24,29 @@ export default class extends Controller {
   }
 
   validate(event) {
-    const rawValue = this.zipTarget.value.trim();
-    const digitsOnly = rawValue.replace(/\D/g, "");
+    const rawZip = this.hasZipTarget ? this.zipTarget.value.trim() : "";
+    const digitsOnly = rawZip.replace(/\D/g, "");
+    const rawCity = this.hasCityTarget ? this.cityTarget.value.trim() : "";
 
     this.clearFlash();
 
-    if (digitsOnly.length === 0) {
-      this.showFlash("alert", "Enter a ZIP code to check the forecast.");
+    if (digitsOnly.length === 0 && rawCity === "") {
+      this.showFlash("alert", "Enter a ZIP code or city to check the forecast.");
       event.preventDefault();
       return;
     }
 
-    if (!(digitsOnly.length === 5 || digitsOnly.length === 9)) {
-      this.showFlash("alert", "Enter a valid US ZIP code (12345 or 12345-6789).");
-      event.preventDefault();
-      return;
-    }
+    if (digitsOnly.length > 0) {
+      if (!(digitsOnly.length === 5 || digitsOnly.length === 9)) {
+        this.showFlash("alert", "Enter a valid US ZIP code (12345 or 12345-6789).");
+        event.preventDefault();
+        return;
+      }
 
-    if (!(rawValue.match(/^\d{5}$/) || rawValue.match(/^\d{5}-\d{4}$/))) {
-      this.showFlash("alert", "Enter a valid US ZIP code (12345 or 12345-6789).");
-      event.preventDefault();
+      if (!(rawZip.match(/^\d{5}$/) || rawZip.match(/^\d{5}-\d{4}$/))) {
+        this.showFlash("alert", "Enter a valid US ZIP code (12345 or 12345-6789).");
+        event.preventDefault();
+      }
     }
   }
 

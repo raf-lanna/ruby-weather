@@ -15,13 +15,13 @@ class WeatherApi
     end
   end
 
-  def fetch_current(zip_code:)
+  def fetch_current(query:)
     api_key = ENV.fetch("WEATHER_API_KEY") do
       raise "WEATHER_API_KEY is not set"
     end
 
     uri = URI.parse("#{BASE_URL}/current.json")
-    uri.query = URI.encode_www_form(key: api_key, q: zip_code)
+    uri.query = URI.encode_www_form(key: api_key, q: query)
 
     response = Net::HTTP.get_response(uri)
     body = response.body

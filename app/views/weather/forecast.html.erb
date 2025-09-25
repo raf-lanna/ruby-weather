@@ -6,6 +6,8 @@
 
   <% if @zip_code.present? %>
     <p>Showing forecast for ZIP code <strong><%= @zip_code %></strong>.</p>
+  <% elsif @city.present? %>
+    <p>Showing forecast for city <strong><%= @city %></strong>.</p>
   <% end %>
 
   <% if flash[:alert] %>
@@ -15,7 +17,7 @@
   <% if @forecast.present? %>
     <%= render partial: "weather/weather_api_com_partial", locals: { forecast: @forecast } %>
   <% elsif flash[:alert].blank? %>
-    <p class="alert">No forecast data was returned for this ZIP code.</p>
+    <p class="alert">No forecast data was returned for the provided location.</p>
   <% end %>
 </div>
 

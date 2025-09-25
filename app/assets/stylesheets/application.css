@@ -362,6 +362,29 @@
   transform: translateY(1px);
 }
 
+.zip-form__input-wrap--text {
+  flex-wrap: wrap;
+  padding: 0.35rem 0.75rem 0.35rem 1rem;
+}
+
+.zip-form__input--text {
+  padding: 0.6rem 0;
+  font-size: 1rem;
+}
+
+.zip-form__or {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(17, 24, 39, 0.45);
+}
+
+.zip-form__submit--secondary {
+  background: linear-gradient(135deg, #0ea5e9, #6366f1);
+  box-shadow: 0 12px 20px rgba(14, 165, 233, 0.25);
+}
+
 .zip-form__notice {
   margin: 0;
   font-size: 0.9rem;
@@ -387,5 +410,14 @@
 
   .zip-form__submit {
     width: 100%;
+  }
+
+  .zip-form__input-wrap--text {
+    align-items: stretch;
+  }
+
+  .zip-form__or {
+    width: 100%;
+    text-align: center;
   }
 }
