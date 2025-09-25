@@ -104,7 +104,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
       get weather_forecast_path, params: { zip_code: "99999" }
 
       assert_response :not_found
-      assert_match "We couldn't find a location with those details", response.body
+      assert_includes response.body, "We couldn&#39;t find a location with those details. Please check the ZIP code or city name."
     end
   end
 
@@ -115,7 +115,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
       get weather_forecast_path, params: { zip_code: "90001" }
 
       assert_response :bad_gateway
-      assert_match "We couldn't fetch the forecast right now", response.body
+      assert_includes response.body, "We couldn&#39;t fetch the forecast right now. Please try again shortly."
     end
   end
 
@@ -124,7 +124,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
       get weather_forecast_path, params: { zip_code: "90001" }
 
       assert_response :bad_gateway
-      assert_match "We couldn't fetch the forecast right now", response.body
+      assert_includes response.body, "We couldn&#39;t fetch the forecast right now. Please try again shortly."
     end
   end
 
