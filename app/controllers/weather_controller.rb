@@ -33,12 +33,10 @@ class WeatherController < ApplicationController
         flash.now[:alert] = "Não conseguimos obter a previsão agora. Tente novamente em instantes."
         render :index, status: :bad_gateway
       end
-      return
     rescue StandardError => e
       Rails.logger.error("Weather API unexpected error: #{e.message}")
       flash.now[:alert] = "Não conseguimos obter a previsão agora. Tente novamente em instantes."
       render :index, status: :bad_gateway
-      return
     end
   end
 

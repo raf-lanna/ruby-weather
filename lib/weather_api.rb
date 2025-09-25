@@ -55,4 +55,3 @@ class WeatherApi
     {}
   end
 end
-

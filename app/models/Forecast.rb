@@ -56,7 +56,7 @@ class Forecast
   end
 
   def location_label
-    [location_name, region, country].compact.reject(&:blank?).join(", ")
+    [ location_name, region, country ].compact.reject(&:blank?).join(", ")
   end
 
   def daytime?

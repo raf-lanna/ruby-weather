@@ -7,4 +7,3 @@ class ApiService
     @weather_client.fetch_current(zip_code: zip_code)
   end
 end
-

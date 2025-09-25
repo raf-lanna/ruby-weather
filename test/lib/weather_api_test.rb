@@ -78,5 +78,3 @@ class WeatherApiTest < ActiveSupport::TestCase
     ENV["WEATHER_API_KEY"] = @original_api_key || "test-key"
   end
 end
-
-

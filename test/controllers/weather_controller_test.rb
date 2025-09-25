@@ -94,5 +94,3 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
     assert_match "Enter a valid US ZIP code", response.body
   end
 end
-
-
