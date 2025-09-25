@@ -49,7 +49,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "GET /weather/forecast com days>0 chama forecast" do
+  test "GET /weather/forecast with days > 0 calls forecast" do
     weather_payload = {
       "location" => { "name" => "Los Angeles" },
       "forecast" => {
@@ -79,7 +79,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "GET /weather/forecast aceita busca por cidade" do
+  test "GET /weather/forecast accepts search by city" do
     weather_payload = {
       "location" => {
         "name" => "Los Angeles",
@@ -97,45 +97,45 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "GET /weather/forecast avisa quando zip não existe" do
+  test "GET /weather/forecast warns when ZIP does not exist" do
     error = WeatherApi::Error.new(message: "No matching location found.", code: 1006, http_status: 400)
 
     with_api_service(error: error) do
       get weather_forecast_path, params: { zip_code: "99999" }
 
       assert_response :not_found
-      assert_match "Não encontramos nenhuma localização com esses dados", response.body
+      assert_match "We couldn't find a location with those details", response.body
     end
   end
 
-  test "GET /weather/forecast mostra erro genérico quando API falha" do
+  test "GET /weather/forecast shows generic error when API fails" do
     error = WeatherApi::Error.new(message: "Invalid API key", code: 1002, http_status: 400)
 
     with_api_service(error: error) do
       get weather_forecast_path, params: { zip_code: "90001" }
 
       assert_response :bad_gateway
-      assert_match "Não conseguimos obter a previsão agora", response.body
+      assert_match "We couldn't fetch the forecast right now", response.body
     end
   end
 
-  test "GET /weather/forecast mostra erro genérico quando ocorre exceção inesperada" do
+  test "GET /weather/forecast shows generic error when unexpected exception occurs" do
     with_api_service(error: Timeout::Error) do
       get weather_forecast_path, params: { zip_code: "90001" }
 
       assert_response :bad_gateway
-      assert_match "Não conseguimos obter a previsão agora", response.body
+      assert_match "We couldn't fetch the forecast right now", response.body
     end
   end
 
-  test "GET /weather/forecast exige zip ou cidade" do
+  test "GET /weather/forecast requires ZIP or city" do
     get weather_forecast_path, params: { zip_code: "", city: "" }
 
     assert_response :unprocessable_entity
     assert_match "Enter a ZIP code or city", response.body
   end
 
-  test "GET /weather/forecast rejeita zip com formato inválido" do
+  test "GET /weather/forecast rejects invalid ZIP format" do
     get weather_forecast_path, params: { zip_code: "1234" }
 
     assert_response :unprocessable_entity

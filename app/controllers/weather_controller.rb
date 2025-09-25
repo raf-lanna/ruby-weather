@@ -34,21 +34,21 @@ class WeatherController < ApplicationController
         response = api_service.fetch_weather(query: location, days: api_days)
         Forecast.from_api_response(response, day_offset: @days)
       end
-      flash.now[:notice] = "Esta previsão veio do cache e pode estar desatualizada (até 30 minutos)." if cache_hit
+      flash.now[:notice] = "This forecast came from cache and may be up to 30 minutes old." if cache_hit
     rescue WeatherApi::Error => e
       Rails.logger.warn("Weather API error (code=#{e.code}, status=#{e.http_status}): #{e.message}")
 
       if e.code.to_i == 1006
-        flash.now[:alert] = "Não encontramos nenhuma localização com esses dados. Confira se o ZIP code ou nome da cidade estão corretos."
+        flash.now[:alert] = "We couldn't find a location with those details. Please check the ZIP code or city name."
         render :index, status: :not_found
       else
-        flash.now[:alert] = "Não conseguimos obter a previsão agora. Tente novamente em instantes."
+        flash.now[:alert] = "We couldn't fetch the forecast right now. Please try again shortly."
         render :index, status: :bad_gateway
       end
       return
     rescue StandardError => e
       Rails.logger.error("Weather API unexpected error: #{e.message}")
-      flash.now[:alert] = "Não conseguimos obter a previsão agora. Tente novamente em instantes."
+      flash.now[:alert] = "We couldn't fetch the forecast right now. Please try again shortly."
       render :index, status: :bad_gateway
       return
     end

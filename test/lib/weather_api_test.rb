@@ -12,7 +12,7 @@ class WeatherApiTest < ActiveSupport::TestCase
     ENV["WEATHER_API_KEY"] = @original_api_key
   end
 
-  test "fetch_current retorna dados parseados quando a resposta é bem sucedida" do
+  test "fetch_current returns parsed data when response succeeds" do
     body = {
       "location" => { "name" => "Los Angeles" },
       "current" => { "temp_c" => 22.1 }
@@ -28,7 +28,7 @@ class WeatherApiTest < ActiveSupport::TestCase
     end
   end
 
-  test "fetch_current levanta WeatherApi::Error quando localização não é encontrada" do
+  test "fetch_current raises WeatherApi::Error when location is not found" do
     error_body = {
       "error" => {
         "code" => 1006,
@@ -49,7 +49,7 @@ class WeatherApiTest < ActiveSupport::TestCase
     end
   end
 
-  test "fetch_current levanta WeatherApi::Error com mensagem padrão quando corpo não é json" do
+  test "fetch_current raises WeatherApi::Error with default message when body is not json" do
     response = build_response(Net::HTTPServerError, "500", "<!DOCTYPE html>")
 
     with_http_response(response) do
@@ -63,7 +63,7 @@ class WeatherApiTest < ActiveSupport::TestCase
     end
   end
 
-  test "raise se WEATHER_API_KEY não estiver definido" do
+  test "raises if WEATHER_API_KEY is not set" do
     ENV.delete("WEATHER_API_KEY")
 
     assert_raises(KeyError) do

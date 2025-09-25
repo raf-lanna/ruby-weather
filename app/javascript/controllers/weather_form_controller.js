@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Conecta o formulário de CEP para validar o formato no frontend
+// Connects the ZIP form to validate format on the frontend
 export default class extends Controller {
   static targets = ["zip", "city", "days", "daysValue"];
 
@@ -18,8 +18,8 @@ export default class extends Controller {
 
     const value = event ? event.target.value : (this.hasDaysTarget ? this.daysTarget.value : this.daysValueTarget.dataset.currentValue);
     const parsed = parseInt(value, 10) || 0;
-    const suffix = parsed === 0 ? "hoje" : `daqui a ${parsed} dia${parsed === 1 ? "" : "s"}`;
-    this.daysValueTarget.textContent = `Previsão para ${suffix}`;
+    const suffix = parsed === 0 ? "today" : `in ${parsed} day${parsed === 1 ? "" : "s"}`;
+    this.daysValueTarget.textContent = `Forecast ${suffix}`;
   }
 
   formatZip() {

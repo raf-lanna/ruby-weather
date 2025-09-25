@@ -115,9 +115,9 @@ class Forecast
 
   def build_day_offset_label(offset)
     return "Hoje" if offset.to_i.zero?
-    return "Amanhã" if offset == 1
+    return "Tomorrow" if offset == 1
 
-    "Daqui a #{offset} dias"
+    "In #{offset} days"
   end
 
   def normalize_icon_url(icon)

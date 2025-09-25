@@ -2,9 +2,9 @@ require_relative "boot"
 
 require "rails"
 
-# Carrega apenas os frameworks necessários, sem Active Record
+# Load only the necessary frameworks, without Active Record
 require "active_model/railtie"
-# O app não usa Active Job
+# The app does not use Active Job
 # require "active_job/railtie"
 require "action_controller/railtie"
 require "action_mailer/railtie"
