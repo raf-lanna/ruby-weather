@@ -14,17 +14,23 @@ class WeatherController < ApplicationController
       return
     end
 
-    query = determine_query
+    query = define_query_type
     unless query
       render :index, status: :unprocessable_entity
       return
     end
 
     api_service = ApiService.new
+    cache_key = cache_key_for(query)
 
     begin
-      response = api_service.fetch_weather(query: query)
-      @forecast = Forecast.from_api_response(response)
+      cache_hit = true
+      @forecast = Rails.cache.fetch(cache_key, expires_in: 30.minutes) do
+        cache_hit = false
+        response = api_service.fetch_weather(query: query)
+        Forecast.from_api_response(response)
+      end
+      flash.now[:notice] = "Esta previsão veio do cache e pode estar desatualizada (até 30 minutos)." if cache_hit
     rescue WeatherApi::Error => e
       Rails.logger.warn("Weather API error (code=#{e.code}, status=#{e.http_status}): #{e.message}")
 
@@ -46,7 +52,12 @@ class WeatherController < ApplicationController
 
   private
 
-  def determine_query
+  def cache_key_for(query)
+    type = @zip_code.present? ? "zip" : "city"
+    "forecast_#{type}_#{query}"
+  end
+
+  def define_query_type
     if @zip_code.present?
       return @zip_code if valid_zip_code?(@zip_code)
 
