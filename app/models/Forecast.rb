@@ -17,16 +17,53 @@ class Forecast
               :last_updated,
               :condition_text,
               :condition_icon_url,
-              :condition_code
+              :condition_code,
+              :min_temperature_c,
+              :min_temperature_f,
+              :max_temperature_c,
+              :max_temperature_f,
+              :forecast_date,
+              :day_offset_label
 
-  def self.from_api_response(response)
+  def self.from_api_response(response, day_offset: 0)
     location = response.fetch("location", {})
-    current = response.fetch("current", {})
 
-    new(location: location, current: current)
+    if day_offset.to_i.positive?
+      forecast_days = Array(response.dig("forecast", "forecastday"))
+      index = [[day_offset.to_i, forecast_days.length - 1].min, 0].max
+      daily = forecast_days[index]
+
+      if daily
+        day = daily.fetch("day", {}) || {}
+        condition = day.fetch("condition", {}) || {}
+
+        pseudo_current = {
+          "temp_c" => day["avgtemp_c"],
+          "temp_f" => day["avgtemp_f"],
+          "min_temp_c" => day["mintemp_c"],
+          "min_temp_f" => day["mintemp_f"],
+          "max_temp_c" => day["maxtemp_c"],
+          "max_temp_f" => day["maxtemp_f"],
+          "humidity" => day["avghumidity"],
+          "wind_kph" => day["maxwind_kph"],
+          "wind_dir" => nil,
+          "precip_in" => day["totalprecip_in"],
+          "vis_miles" => day["avgvis_miles"],
+          "uv" => day["uv"],
+          "last_updated" => daily["date"],
+          "is_day" => nil,
+          "condition" => condition
+        }
+
+        return new(location: location, current: pseudo_current, day_offset: index, forecast_date: daily["date"])
+      end
+    end
+
+    current = response.fetch("current", {})
+    new(location: location, current: current, day_offset: 0)
   end
 
-  def initialize(location:, current:)
+  def initialize(location:, current:, day_offset:, forecast_date: nil)
     condition = current.fetch("condition", {}) || {}
 
     @location_name = location["name"]
@@ -39,6 +76,10 @@ class Forecast
 
     @temperature_c = current["temp_c"]
     @temperature_f = current["temp_f"]
+    @min_temperature_c = current["min_temp_c"]
+    @min_temperature_f = current["min_temp_f"]
+    @max_temperature_c = current["max_temp_c"]
+    @max_temperature_f = current["max_temp_f"]
     @humidity = current["humidity"]
     @wind_kph = current["wind_kph"]
     @wind_direction = current["wind_dir"]
@@ -53,6 +94,9 @@ class Forecast
     @condition_text = condition["text"]
     @condition_code = condition["code"]
     @condition_icon_url = normalize_icon_url(condition["icon"])
+
+    @forecast_date = forecast_date
+    @day_offset_label = build_day_offset_label(day_offset)
   end
 
   def location_label
@@ -68,6 +112,13 @@ class Forecast
   end
 
   private
+
+  def build_day_offset_label(offset)
+    return "Hoje" if offset.to_i.zero?
+    return "Amanhã" if offset == 1
+
+    "Daqui a #{offset} dias"
+  end
 
   def normalize_icon_url(icon)
     return if icon.blank?

@@ -137,6 +137,29 @@
   color: rgba(17, 24, 39, 0.6);
 }
 
+.weather-card__range {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.weather-card__range dt {
+  margin: 0 0 0.25rem;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(17, 24, 39, 0.6);
+}
+
+.weather-card__range dd {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgba(17, 24, 39, 0.85);
+}
+
 .weather-card__metrics {
   flex: 2 1 300px;
   display: grid;
@@ -390,6 +413,7 @@
   font-size: 0.9rem;
   color: rgba(17, 24, 39, 0.6);
 }
+
 
 @media (max-width: 768px) {
   .weather-landing {

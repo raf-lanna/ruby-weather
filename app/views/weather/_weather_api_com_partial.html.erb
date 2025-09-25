@@ -2,7 +2,12 @@
   <header class="weather-card__header">
     <div class="weather-card__location">
       <h2><%= forecast.location_label %></h2>
-      <% if forecast.local_time.present? %>
+      <% if forecast.forecast_date.present? %>
+        <p class="weather-card__time">
+          Forecast for <time datetime="<%= forecast.forecast_date %>"><%= forecast.forecast_date %></time>
+          <span class="weather-card__day-offset"><%= forecast.day_offset_label %></span>
+        </p>
+      <% elsif forecast.local_time.present? %>
         <p class="weather-card__time">
           Local time: <time datetime="<%= forecast.local_time %>"><%= forecast.local_time %></time>
         </p>
@@ -32,6 +37,34 @@
           <% end %>
         </p>
       <% end %>
+
+      <% if forecast.max_temperature_c.present? || forecast.min_temperature_c.present? %>
+        <dl class="weather-card__range">
+          <% if forecast.max_temperature_c.present? %>
+            <div>
+              <dt>Máx</dt>
+              <dd>
+                <%= number_with_precision(forecast.max_temperature_c, precision: 1) %> °C
+                <% if forecast.max_temperature_f.present? %>
+                  (<%= number_with_precision(forecast.max_temperature_f, precision: 1) %> °F)
+                <% end %>
+              </dd>
+            </div>
+          <% end %>
+          <% if forecast.min_temperature_c.present? %>
+            <div>
+              <dt>Mín</dt>
+              <dd>
+                <%= number_with_precision(forecast.min_temperature_c, precision: 1) %> °C
+                <% if forecast.min_temperature_f.present? %>
+                  (<%= number_with_precision(forecast.min_temperature_f, precision: 1) %> °F)
+                <% end %>
+              </dd>
+            </div>
+          <% end %>
+        </dl>
+      <% end %>
+
       <% unless forecast.daytime?.nil? %>
         <p class="weather-card__daylight"><%= forecast.daylight_label %></p>
       <% end %>

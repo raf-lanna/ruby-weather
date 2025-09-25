@@ -16,9 +16,7 @@ class WeatherApi
   end
 
   def fetch_current(query:)
-    api_key = ENV.fetch("WEATHER_API_KEY") do
-      raise "WEATHER_API_KEY is not set"
-    end
+    api_key = fetch_api_key
 
     uri = URI.parse("#{BASE_URL}/current.json")
     uri.query = URI.encode_www_form(key: api_key, q: query)
@@ -41,7 +39,37 @@ class WeatherApi
     JSON.parse(body)
   end
 
+  def fetch_forecast(query:, days:)
+    api_key = fetch_api_key
+
+    uri = URI.parse("#{BASE_URL}/forecast.json")
+    uri.query = URI.encode_www_form(key: api_key, q: query, days: days)
+
+    response = Net::HTTP.get_response(uri)
+    body = response.body
+
+    unless response.is_a?(Net::HTTPSuccess)
+      error_info = parse_error_payload(body)
+
+      message = error_info[:message] || "Weather API request failed with status #{response.code}"
+
+      raise Error.new(
+        message: message,
+        code: error_info[:code],
+        http_status: response.code.to_i
+      )
+    end
+
+    JSON.parse(body)
+  end
+
   private
+
+  def fetch_api_key
+    ENV.fetch("WEATHER_API_KEY") do
+      raise KeyError, "WEATHER_API_KEY is not set"
+    end
+  end
 
   def parse_error_payload(body)
     json = JSON.parse(body)

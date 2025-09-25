@@ -44,6 +44,26 @@
         </div>
       </div>
 
+      <div class="zip-form__group">
+        <label class="zip-form__label" for="days-slider">Dia da previsão</label>
+        <div class="zip-form__slider-wrap">
+          <input type="range"
+                 id="days-slider"
+                 name="days"
+                 min="0"
+                 max="5"
+                 value="<%= @days || 0 %>"
+                 class="zip-form__slider"
+                 data-action="input->weather-form#updateDaysLabel"
+                 data-weather-form-target="days">
+          <div class="zip-form__slider-labels">
+            <span>Hoje</span>
+            <span>+5 dias</span>
+          </div>
+          <p class="zip-form__slider-value" data-weather-form-target="daysValue" data-current-value="<%= @days || 0 %>">Previsão para hoje</p>
+        </div>
+      </div>
+
       <p class="zip-form__notice">We send the city or ZIP code you provide directly to WeatherAPI.com and do not store it.</p>
     <% end %>
   </section>
