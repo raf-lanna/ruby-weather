@@ -351,6 +351,54 @@
   gap: 0.75rem;
 }
 
+.zip-form__calendar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.zip-form__day-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: center;
+  padding: 0.9rem 0.75rem;
+  border-radius: 16px;
+  border: 1px solid rgba(30, 64, 175, 0.18);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  text-align: center;
+}
+
+.zip-form__day-option:hover {
+  border-color: rgba(30, 64, 175, 0.35);
+  box-shadow: 0 12px 20px rgba(30, 64, 175, 0.08);
+  transform: translateY(-1px);
+}
+
+.zip-form__day-option--selected {
+  border-color: rgba(37, 99, 235, 0.65);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.16), rgba(124, 58, 237, 0.18));
+}
+
+.zip-form__day-input {
+  appearance: none;
+  position: absolute;
+}
+
+.zip-form__day-date {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1f2937;
+}
+
+.zip-form__day-caption {
+  font-size: 0.85rem;
+  color: rgba(17, 24, 39, 0.6);
+}
+
 .zip-form__label {
   font-weight: 600;
   font-size: 0.98rem;

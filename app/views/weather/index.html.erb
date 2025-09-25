@@ -44,18 +44,22 @@
       </div>
 
       <div class="zip-form__group">
-        <label class="zip-form__label" for="days-slider">Forecast day (up to 5 days)</label>
-        <div class="zip-form__slider-wrap">
-          <input type="range"
-                 id="days-slider"
-                 name="days"
-                 min="0"
-                 max="5"
-                 value="<%= @days || 0 %>"
-                 class="zip-form__slider"
-                 data-action="input->weather-form#updateDaysLabel"
-                 data-weather-form-target="days">
-          <p class="zip-form__slider-value" data-weather-form-target="daysValue" data-current-value="<%= @days || 0 %>">Forecast for today</p>
+        <span class="zip-form__label">Forecast day (up to 5 days)</span>
+        <% selected_offset = (@days || 0).to_i.clamp(0, 5) %>
+        <div class="zip-form__calendar" data-weather-form-target="dayList">
+          <% 0.upto(5) do |offset| %>
+            <% date = Time.zone.today + offset.days %>
+            <% caption = case offset
+                        when 0 then "Today"
+                        when 1 then "Tomorrow"
+                        else "#{offset} days ahead"
+                        end %>
+            <label class="zip-form__day-option <%= 'zip-form__day-option--selected' if selected_offset == offset %>" data-weather-form-target="dayOption">
+              <%= form.radio_button :days, offset, checked: selected_offset == offset, class: "zip-form__day-input", data: { action: "change->weather-form#selectDay" } %>
+              <span class="zip-form__day-date"><%= date.strftime("%b %d") %></span>
+              <span class="zip-form__day-caption"><%= caption %></span>
+            </label>
+          <% end %>
         </div>
       </div>
 

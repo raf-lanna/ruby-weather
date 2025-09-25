@@ -2,24 +2,32 @@ import { Controller } from "@hotwired/stimulus";
 
 // Connects the ZIP form to validate format on the frontend
 export default class extends Controller {
-  static targets = ["zip", "city", "days", "daysValue"];
+  static targets = ["zip", "city", "dayList", "dayOption"];
 
   connect() {
     this.toggleInputs();
-    this.updateDaysLabel();
+    this.highlightSelectedDay();
   }
 
   onInput() {
     this.toggleInputs();
   }
 
-  updateDaysLabel(event) {
-    if (!this.hasDaysValueTarget) return;
+  selectDay(event) {
+    this.highlightSelectedDay(event.target.value);
+  }
 
-    const value = event ? event.target.value : (this.hasDaysTarget ? this.daysTarget.value : this.daysValueTarget.dataset.currentValue);
-    const parsed = parseInt(value, 10) || 0;
-    const suffix = parsed === 0 ? "today" : `in ${parsed} day${parsed === 1 ? "" : "s"}`;
-    this.daysValueTarget.textContent = `Forecast ${suffix}`;
+  highlightSelectedDay(selectedValue) {
+    if (!this.hasDayOptionTarget) return;
+
+    const value = selectedValue ?? this.selectedDayValue;
+
+    this.dayOptionTargets.forEach((option) => {
+      option.classList.toggle(
+        "zip-form__day-option--selected",
+        option.querySelector("input")?.value === value
+      );
+    });
   }
 
   formatZip() {
@@ -110,6 +118,11 @@ export default class extends Controller {
     } else {
       this.zipTarget.removeAttribute("disabled");
     }
+  }
+
+  get selectedDayValue() {
+    const selected = this.element.querySelector("input[name='days']:checked");
+    return selected ? selected.value : "0";
   }
 }
 

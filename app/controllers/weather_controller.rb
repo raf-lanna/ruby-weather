@@ -23,7 +23,7 @@ class WeatherController < ApplicationController
       return
     end
 
-    api_service = ApiService.new
+    external_api_service = ExternalApiService.new
     cache_key = cache_key_for(location)
     api_days = @days.positive? ? (@days + 1).clamp(1, 6) : nil
 
@@ -31,7 +31,7 @@ class WeatherController < ApplicationController
       cache_hit = true
       @forecast = Rails.cache.fetch(cache_key, expires_in: 30.minutes) do
         cache_hit = false
-        response = api_service.fetch_weather(query: location, days: api_days)
+        response = external_api_service.fetch_weather(query: location, days: api_days)
         Forecast.from_api_response(response, day_offset: @days)
       end
       flash.now[:notice] = "This forecast came from cache and may be up to 30 minutes old." if cache_hit

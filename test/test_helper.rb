@@ -23,20 +23,20 @@ module TestHelpers
 
   module ApiServiceStub
     def with_api_service(result: nil, error: nil)
-      original = ApiService.method(:new)
+      original = ExternalApiService.method(:new)
 
-      ApiService.define_singleton_method(:new) do |*args, **kwargs|
-        StubbedApiService.new(result:, error:)
+      ExternalApiService.define_singleton_method(:new) do |*args, **kwargs|
+        StubbedExternalApiService.new(result:, error:)
       end
 
       yield
     ensure
-      ApiService.define_singleton_method(:new) do |*args, **kwargs|
+      ExternalApiService.define_singleton_method(:new) do |*args, **kwargs|
         original.call(*args, **kwargs)
       end
     end
 
-    class StubbedApiService
+    class StubbedExternalApiService
       def initialize(result:, error:)
         @result = result
         @error = error
