@@ -38,24 +38,27 @@ class Forecast
         condition = day.fetch("condition", {}) || {}
 
         pseudo_current = {
-          "temp_c" => day["avgtemp_c"],
-          "temp_f" => day["avgtemp_f"],
-          "min_temp_c" => day["mintemp_c"],
-          "min_temp_f" => day["mintemp_f"],
-          "max_temp_c" => day["maxtemp_c"],
-          "max_temp_f" => day["maxtemp_f"],
-          "humidity" => day["avghumidity"],
-          "wind_kph" => day["maxwind_kph"],
-          "wind_dir" => nil,
-          "precip_in" => day["totalprecip_in"],
-          "vis_miles" => day["avgvis_miles"],
-          "uv" => day["uv"],
+          "temp_c"       => day["avgtemp_c"],
+          "temp_f"       => day["avgtemp_f"],
+          "min_temp_c"   => day["mintemp_c"],
+          "min_temp_f"   => day["mintemp_f"],
+          "max_temp_c"   => day["maxtemp_c"],
+          "max_temp_f"   => day["maxtemp_f"],
+          "humidity"     => day["avghumidity"],
+          "wind_kph"     => day["maxwind_kph"],
+          "wind_dir"     => nil,
+          "precip_in"    => day["totalprecip_in"],
+          "vis_miles"    => day["avgvis_miles"],
+          "uv"           => day["uv"],
           "last_updated" => daily["date"],
-          "is_day" => nil,
-          "condition" => condition
+          "is_day"       => nil,
+          "condition"    => condition
         }
 
-        return new(location: location, current: pseudo_current, day_offset: index, forecast_date: daily["date"])
+        return new(location: location,
+                   current: pseudo_current,
+                   day_offset: index,
+                   forecast_date: daily["date"])
       end
     end
 
@@ -67,26 +70,26 @@ class Forecast
     condition = current.fetch("condition", {}) || {}
 
     @location_name = location["name"]
-    @region = location["region"]
-    @country = location["country"]
-    @latitude = location["lat"]
-    @longitude = location["lon"]
-    @time_zone = location["tz_id"]
-    @local_time = location["localtime"]
+    @region        = location["region"]
+    @country       = location["country"]
+    @latitude      = location["lat"]
+    @longitude     = location["lon"]
+    @time_zone     = location["tz_id"]
+    @local_time    = location["localtime"]
 
-    @temperature_c = current["temp_c"]
-    @temperature_f = current["temp_f"]
+    @temperature_c     = current["temp_c"]
+    @temperature_f     = current["temp_f"]
     @min_temperature_c = current["min_temp_c"]
     @min_temperature_f = current["min_temp_f"]
     @max_temperature_c = current["max_temp_c"]
     @max_temperature_f = current["max_temp_f"]
-    @humidity = current["humidity"]
-    @wind_kph = current["wind_kph"]
-    @wind_direction = current["wind_dir"]
-    @precip_inches = current["precip_in"]
-    @visibility_miles = current["vis_miles"]
-    @uv_index = current["uv"]
-    @last_updated = current["last_updated"]
+    @humidity          = current["humidity"]
+    @wind_kph          = current["wind_kph"]
+    @wind_direction    = current["wind_dir"]
+    @precip_inches     = current["precip_in"]
+    @visibility_miles  = current["vis_miles"]
+    @uv_index          = current["uv"]
+    @last_updated      = current["last_updated"]
 
     raw_is_day = current.key?("is_day") ? current["is_day"] : nil
     @is_daytime = raw_is_day.nil? ? nil : raw_is_day.to_i == 1
