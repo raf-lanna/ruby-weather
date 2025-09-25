@@ -1,4 +1,5 @@
 require "test_helper"
+require "net/http"
 
 class WeatherControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -40,14 +41,40 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
       }
     }
 
-    WeatherApi.any_instance.stub :fetch_current, ->(query:) {
-      assert_equal "90001", query
-      weather_payload
-    } do
+    with_api_service(result: weather_payload) do
       get weather_forecast_path, params: { zip_code: "90001" }
 
       assert_response :success
-      assert_select "h1", text: "Weather forecast"
+      assert_select ".weather-card__location h2", text: /Los Angeles/
+    end
+  end
+
+  test "GET /weather/forecast com days>0 chama forecast" do
+    weather_payload = {
+      "location" => { "name" => "Los Angeles" },
+      "forecast" => {
+        "forecastday" => [
+          {
+            "date" => "2025-09-24",
+            "day" => {
+              "avgtemp_c" => 22.0,
+              "avgtemp_f" => 71.6,
+              "avghumidity" => 55,
+              "maxwind_kph" => 10,
+              "totalprecip_in" => 0.1,
+              "avgvis_miles" => 8,
+              "uv" => 4,
+              "condition" => { "text" => "Partly cloudy", "icon" => "//icon.png", "code" => 1003 }
+            }
+          }
+        ]
+      }
+    }
+
+    with_api_service(result: weather_payload) do
+      get weather_forecast_path, params: { zip_code: "90001", days: 1 }
+
+      assert_response :success
       assert_select ".weather-card__location h2", text: /Los Angeles/
     end
   end
@@ -62,21 +89,18 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
       "current" => { "temp_c" => 22.0 }
     }
 
-    WeatherApi.any_instance.stub :fetch_current, ->(query:) {
-      assert_equal "Los Angeles", query
-      weather_payload
-    } do
+    with_api_service(result: weather_payload) do
       get weather_forecast_path, params: { city: "Los Angeles" }
 
       assert_response :success
-      assert_match "Showing forecast for city", response.body
+      assert_select ".weather-card__location h2", text: /Los Angeles/
     end
   end
 
   test "GET /weather/forecast avisa quando zip não existe" do
     error = WeatherApi::Error.new(message: "No matching location found.", code: 1006, http_status: 400)
 
-    WeatherApi.any_instance.stub :fetch_current, ->(**) { raise error } do
+    with_api_service(error: error) do
       get weather_forecast_path, params: { zip_code: "99999" }
 
       assert_response :not_found
@@ -87,7 +111,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
   test "GET /weather/forecast mostra erro genérico quando API falha" do
     error = WeatherApi::Error.new(message: "Invalid API key", code: 1002, http_status: 400)
 
-    WeatherApi.any_instance.stub :fetch_current, ->(**) { raise error } do
+    with_api_service(error: error) do
       get weather_forecast_path, params: { zip_code: "90001" }
 
       assert_response :bad_gateway
@@ -96,7 +120,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "GET /weather/forecast mostra erro genérico quando ocorre exceção inesperada" do
-    WeatherApi.any_instance.stub :fetch_current, ->(**) { raise Timeout::Error } do
+    with_api_service(error: Timeout::Error) do
       get weather_forecast_path, params: { zip_code: "90001" }
 
       assert_response :bad_gateway

@@ -1,4 +1,5 @@
 require "test_helper"
+require "net/http"
 
 class WeatherApiTest < ActiveSupport::TestCase
   def setup
@@ -17,11 +18,9 @@ class WeatherApiTest < ActiveSupport::TestCase
       "current" => { "temp_c" => 22.1 }
     }.to_json
 
-    response = Net::HTTPSuccess.new("1.1", "200", "OK")
-    response.instance_variable_set(:@read, true)
-    response.instance_variable_set(:@body, body)
+    response = build_response(Net::HTTPSuccess, "200", body)
 
-    Net::HTTP.stub :get_response, response do
+    with_http_response(response) do
       result = @api.fetch_current(query: "90001")
 
       assert_equal "Los Angeles", result.dig("location", "name")
@@ -37,11 +36,9 @@ class WeatherApiTest < ActiveSupport::TestCase
       }
     }.to_json
 
-    response = Net::HTTPClientError.new("1.1", "400", "Bad Request")
-    response.instance_variable_set(:@read, true)
-    response.instance_variable_set(:@body, error_body)
+    response = build_response(Net::HTTPClientError, "400", error_body)
 
-    Net::HTTP.stub :get_response, response do
+    with_http_response(response) do
       error = assert_raises(WeatherApi::Error) do
         @api.fetch_current(query: "99999")
       end
@@ -53,11 +50,9 @@ class WeatherApiTest < ActiveSupport::TestCase
   end
 
   test "fetch_current levanta WeatherApi::Error com mensagem padrão quando corpo não é json" do
-    response = Net::HTTPServerError.new("1.1", "500", "Internal Server Error")
-    response.instance_variable_set(:@read, true)
-    response.instance_variable_set(:@body, "<!DOCTYPE html>")
+    response = build_response(Net::HTTPServerError, "500", "<!DOCTYPE html>")
 
-    Net::HTTP.stub :get_response, response do
+    with_http_response(response) do
       error = assert_raises(WeatherApi::Error) do
         @api.fetch_current(query: "90001")
       end
@@ -76,5 +71,14 @@ class WeatherApiTest < ActiveSupport::TestCase
     end
   ensure
     ENV["WEATHER_API_KEY"] = @original_api_key || "test-key"
+  end
+
+  private
+
+  def build_response(klass, status, body)
+    response = klass.new("1.1", status, "Response")
+    response.instance_variable_set(:@read, true)
+    response.instance_variable_set(:@body, body)
+    response
   end
 end
