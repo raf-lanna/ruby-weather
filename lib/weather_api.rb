@@ -4,6 +4,10 @@ require "json"
 
 class WeatherApi
   BASE_URL = "https://api.weatherapi.com/v1".freeze
+  FAILED_STATUS_WEATHER_API_MSG = "Weather API request failed with status".freeze
+  API_KEY_NOT_SET_MSG = "WEATHER_API_KEY is not set".freeze
+  ERROR_CODE_KEY = "code".freeze
+  ERROR_MESSAGE_KEY = "message".freeze
 
   class Error < StandardError
     attr_reader :code, :http_status
@@ -27,7 +31,7 @@ class WeatherApi
     unless response.is_a?(Net::HTTPSuccess)
       error_info = parse_error_payload(body)
 
-      message = error_info[:message] || "Weather API request failed with status #{response.code}"
+      message = error_info[:message] || "#{FAILED_STATUS_WEATHER_API_MSG} #{response.code}"
 
       raise Error.new(
         message: message,
@@ -51,7 +55,7 @@ class WeatherApi
     unless response.is_a?(Net::HTTPSuccess)
       error_info = parse_error_payload(body)
 
-      message = error_info[:message] || "Weather API request failed with status #{response.code}"
+      message = error_info[:message] || "#{FAILED_STATUS_WEATHER_API_MSG} #{response.code}"
 
       raise Error.new(
         message: message,
@@ -67,7 +71,7 @@ class WeatherApi
 
   def fetch_api_key
     ENV.fetch("WEATHER_API_KEY") do
-      raise KeyError, "WEATHER_API_KEY is not set"
+      raise KeyError, API_KEY_NOT_SET_MSG
     end
   end
 
@@ -76,8 +80,8 @@ class WeatherApi
     error = json.fetch("error", {})
 
     {
-      code: error["code"],
-      message: error["message"]
+      code: error[ERROR_CODE_KEY],
+      message: error[ERROR_MESSAGE_KEY]
     }
   rescue JSON::ParserError
     {}

@@ -121,7 +121,7 @@ export default class extends Controller {
   }
 
   get selectedDayValue() {
-    const selected = this.element.querySelector("input[name='days']:checked");
+    const selected = this.element.querySelector("input[name='days_from_now']:checked");
     return selected ? selected.value : "0";
   }
 }

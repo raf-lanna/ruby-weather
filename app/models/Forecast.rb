@@ -30,7 +30,7 @@ class Forecast
 
     if day_offset.to_i.positive?
       forecast_days = Array(response.dig("forecast", "forecastday"))
-      index = [[day_offset.to_i, forecast_days.length - 1].min, 0].max
+      index = [ [ day_offset.to_i, forecast_days.length - 1 ].min, 0 ].max
       daily = forecast_days[index]
 
       if daily

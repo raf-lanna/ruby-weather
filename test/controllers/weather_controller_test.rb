@@ -42,7 +42,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
     }
 
     with_api_service(result: weather_payload) do
-      get weather_forecast_path, params: { zip_code: "90001" }
+      get weather_forecast_path, params: { forecast_request: { zip_code: "90001" } }
 
       assert_response :success
       assert_select ".weather-card__location h2", text: /Los Angeles/
@@ -72,7 +72,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
     }
 
     with_api_service(result: weather_payload) do
-      get weather_forecast_path, params: { zip_code: "90001", days: 1 }
+      get weather_forecast_path, params: { forecast_request: { zip_code: "90001", days_from_now: 1 } }
 
       assert_response :success
       assert_select ".weather-card__location h2", text: /Los Angeles/
@@ -90,7 +90,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
     }
 
     with_api_service(result: weather_payload) do
-      get weather_forecast_path, params: { city: "Los Angeles" }
+      get weather_forecast_path, params: { forecast_request: { city: "Los Angeles" } }
 
       assert_response :success
       assert_select ".weather-card__location h2", text: /Los Angeles/
@@ -101,7 +101,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
     error = WeatherApi::Error.new(message: "No matching location found.", code: 1006, http_status: 400)
 
     with_api_service(error: error) do
-      get weather_forecast_path, params: { zip_code: "99999" }
+      get weather_forecast_path, params: { forecast_request: { zip_code: "99999" } }
 
       assert_response :not_found
       assert_includes response.body, "We couldn&#39;t find a location with those details. Please check the ZIP code or city name."
@@ -112,7 +112,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
     error = WeatherApi::Error.new(message: "Invalid API key", code: 1002, http_status: 400)
 
     with_api_service(error: error) do
-      get weather_forecast_path, params: { zip_code: "90001" }
+      get weather_forecast_path, params: { forecast_request: { zip_code: "90001" } }
 
       assert_response :bad_gateway
       assert_includes response.body, "We couldn&#39;t fetch the forecast right now. Please try again shortly."
@@ -121,7 +121,7 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
 
   test "GET /weather/forecast shows generic error when unexpected exception occurs" do
     with_api_service(error: Timeout::Error) do
-      get weather_forecast_path, params: { zip_code: "90001" }
+      get weather_forecast_path, params: { forecast_request: { zip_code: "90001" } }
 
       assert_response :bad_gateway
       assert_includes response.body, "We couldn&#39;t fetch the forecast right now. Please try again shortly."
@@ -129,14 +129,14 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "GET /weather/forecast requires ZIP or city" do
-    get weather_forecast_path, params: { zip_code: "", city: "" }
+    get weather_forecast_path, params: { forecast_request: { zip_code: "", city: "" } }
 
     assert_response :unprocessable_entity
     assert_match "Enter a ZIP code or city", response.body
   end
 
   test "GET /weather/forecast rejects invalid ZIP format" do
-    get weather_forecast_path, params: { zip_code: "1234" }
+    get weather_forecast_path, params: { forecast_request: { zip_code: "1234" } }
 
     assert_response :unprocessable_entity
     assert_match "Enter a valid US ZIP code", response.body
