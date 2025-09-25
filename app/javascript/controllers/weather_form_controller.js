@@ -4,6 +4,14 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static targets = ["zip", "city"];
 
+  connect() {
+    this.toggleInputs();
+  }
+
+  onInput() {
+    this.toggleInputs();
+  }
+
   formatZip() {
     if (!this.hasZipTarget) return;
 
@@ -29,6 +37,8 @@ export default class extends Controller {
     const rawCity = this.hasCityTarget ? this.cityTarget.value.trim() : "";
 
     this.clearFlash();
+
+    this.toggleInputs();
 
     if (digitsOnly.length === 0 && rawCity === "") {
       this.showFlash("alert", "Enter a ZIP code or city to check the forecast.");
@@ -71,6 +81,25 @@ export default class extends Controller {
 
   get flashContainer() {
     return document.querySelector(".flash-messages");
+  }
+
+  toggleInputs() {
+    if (!this.hasZipTarget || !this.hasCityTarget) return;
+
+    const hasZip = this.zipTarget.value.trim().length > 0;
+    const hasCity = this.cityTarget.value.trim().length > 0;
+
+    if (hasZip && !hasCity) {
+      this.cityTarget.setAttribute("disabled", "disabled");
+    } else {
+      this.cityTarget.removeAttribute("disabled");
+    }
+
+    if (hasCity && !hasZip) {
+      this.zipTarget.setAttribute("disabled", "disabled");
+    } else {
+      this.zipTarget.removeAttribute("disabled");
+    }
   }
 }
 

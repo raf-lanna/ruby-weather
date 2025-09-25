@@ -26,7 +26,7 @@
                               value: @zip_code,
                               inputmode: "numeric",
                               class: "zip-form__input",
-                              data: { "weather-form-target": "zip", action: "input->weather-form#formatZip keyup->weather-form#formatZip blur->weather-form#formatZip" } %>
+                              data: { "weather-form-target": "zip", action: "input->weather-form#formatZip input->weather-form#onInput keyup->weather-form#formatZip blur->weather-form#formatZip" } %>
           <button type="submit" class="zip-form__submit">Check forecast</button>
         </div>
       </div>
@@ -38,7 +38,7 @@
                               placeholder: "e.g. Los Angeles, CA",
                               value: @city,
                               class: "zip-form__input zip-form__input--text",
-                              data: { "weather-form-target": "city" } %>
+                              data: { "weather-form-target": "city", action: "input->weather-form#onInput" } %>
           <span class="zip-form__or">or</span>
           <button type="submit" class="zip-form__submit zip-form__submit--secondary">Search city</button>
         </div>
