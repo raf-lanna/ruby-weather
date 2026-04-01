@@ -4,12 +4,16 @@ A Rails app for checking weather by US ZIP code or city using WeatherAPI.
 
 ## Getting Started
 
+- Ruby version:
+  - `7.2.2`
 - Install dependencies:
   - `bundle install`
 - Configure environment:
-  - create a `.env` file with `WEATHER_API_KEY=...`
+  - Create a `.env` file with `WEATHER_API_KEY=...`
 - Start the server:
   - `bin/rails server`
+- Open:
+  - `http://127.0.0.1:3000/weather`
 
 ## Tests
 
