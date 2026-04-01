@@ -1,24 +1,29 @@
-# README
+# Ruby Weather
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+A Rails app for checking weather by US ZIP code or city using WeatherAPI.
 
-Things you may want to cover:
+## Getting Started
 
-* Ruby version
+- Install dependencies:
+  - `bundle install`
+- Configure environment:
+  - create a `.env` file with `WEATHER_API_KEY=...`
+- Start the server:
+  - `bin/rails server`
 
-* System dependencies
+## Tests
 
-* Configuration
+- Full test suite:
+  - `bin/rails test`
+- Style checks:
+  - `bundle exec rubocop`
 
-* Database creation
+## Architecture and SOLID
 
-* Database initialization
+The app applies SOLID principles in the forecast flow:
 
-* How to run the test suite
+- `WeatherController`: HTTP layer (input/output).
+- `Forecasts::FetchForecast`: business-rule and cache orchestration.
+- `Forecasts::CacheKey`: single responsibility for cache key generation.
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Full documentation is available at [`docs/SOLID.md`](docs/SOLID.md).

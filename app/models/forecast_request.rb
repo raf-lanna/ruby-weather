@@ -33,7 +33,7 @@ class ForecastRequest
   end
 
   def days_from_now=(value)
-    @days_from_now = value.present? ? value.to_i : 0
+    @days_from_now = normalize_days_from_now(value)
   end
 
   def normalized_zip_code
@@ -68,6 +68,16 @@ class ForecastRequest
   end
 
   private
+
+  def normalize_days_from_now(value)
+    return 0 if value.blank?
+    return value if value.is_a?(Integer)
+
+    string_value = value.to_s.strip
+    return string_value.to_i if string_value.match?(/\A\d+\z/)
+
+    string_value
+  end
 
   def zip_or_city_presence
     return if zip_code.present? || city.present?

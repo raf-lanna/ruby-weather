@@ -141,4 +141,18 @@ class WeatherControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
     assert_match "Enter a valid US ZIP code", response.body
   end
+
+  test "GET /weather/forecast rejects non numeric days_from_now" do
+    get weather_forecast_path, params: { forecast_request: { zip_code: "90001", days_from_now: "tomorrow" } }
+
+    assert_response :unprocessable_entity
+    assert_match "Days from now is not a number", response.body
+  end
+
+  test "GET /weather/forecast keeps selected day after validation error" do
+    get weather_forecast_path, params: { forecast_request: { zip_code: "1234", days_from_now: 3 } }
+
+    assert_response :unprocessable_entity
+    assert_match(/name="forecast_request\[days_from_now\]".*value="3".*checked="checked"/m, response.body)
+  end
 end

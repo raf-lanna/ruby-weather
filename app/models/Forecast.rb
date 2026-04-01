@@ -117,7 +117,7 @@ class Forecast
   private
 
   def build_day_offset_label(offset)
-    return "Hoje" if offset.to_i.zero?
+    return "Today" if offset.to_i.zero?
     return "Tomorrow" if offset == 1
 
     "In #{offset} days"

@@ -8,6 +8,8 @@ class WeatherApi
   API_KEY_NOT_SET_MSG = "WEATHER_API_KEY is not set".freeze
   ERROR_CODE_KEY = "code".freeze
   ERROR_MESSAGE_KEY = "message".freeze
+  HTTP_OPEN_TIMEOUT_SECONDS = 5
+  HTTP_READ_TIMEOUT_SECONDS = 8
 
   class Error < StandardError
     attr_reader :code, :http_status
@@ -19,37 +21,37 @@ class WeatherApi
     end
   end
 
+  def initialize(http_client: Net::HTTP)
+    @http_client = http_client
+  end
+
   def fetch_current(query:)
-    api_key = fetch_api_key
-
-    uri = URI.parse("#{BASE_URL}/current.json")
-    uri.query = URI.encode_www_form(key: api_key, q: query)
-
-    response = Net::HTTP.get_response(uri)
-    body = response.body
-
-    unless response.is_a?(Net::HTTPSuccess)
-      error_info = parse_error_payload(body)
-
-      message = error_info[:message] || "#{FAILED_STATUS_WEATHER_API_MSG} #{response.code}"
-
-      raise Error.new(
-        message: message,
-        code: error_info[:code],
-        http_status: response.code.to_i
-      )
-    end
-
-    JSON.parse(body)
+    request_json(endpoint: "current", query:, days: nil)
   end
 
   def fetch_forecast(query:, days:)
+    request_json(endpoint: "forecast", query:, days:)
+  end
+
+  private
+
+  def request_json(endpoint:, query:, days:)
     api_key = fetch_api_key
+    uri = URI.parse("#{BASE_URL}/#{endpoint}.json")
+    params = { key: api_key, q: query }
+    params[:days] = days if days.present?
+    uri.query = URI.encode_www_form(params)
 
-    uri = URI.parse("#{BASE_URL}/forecast.json")
-    uri.query = URI.encode_www_form(key: api_key, q: query, days: days)
+    response = @http_client.start(
+      uri.host,
+      uri.port,
+      use_ssl: uri.scheme == "https",
+      open_timeout: HTTP_OPEN_TIMEOUT_SECONDS,
+      read_timeout: HTTP_READ_TIMEOUT_SECONDS
+    ) do |http|
+      http.get(uri.request_uri)
+    end
 
-    response = Net::HTTP.get_response(uri)
     body = response.body
 
     unless response.is_a?(Net::HTTPSuccess)
@@ -66,8 +68,6 @@ class WeatherApi
 
     JSON.parse(body)
   end
-
-  private
 
   def fetch_api_key
     ENV.fetch("WEATHER_API_KEY") do

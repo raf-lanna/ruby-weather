@@ -1,26 +1,8 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
-require "net/http"
 
 module TestHelpers
-  module HttpStub
-    def with_http_response(response)
-      http_singleton = Net::HTTP.singleton_class
-      original = Net::HTTP.method(:get_response)
-
-      http_singleton.define_method(:get_response) do |*args, **kwargs, &block|
-        response
-      end
-
-      yield
-    ensure
-      http_singleton.define_method(:get_response) do |*args, **kwargs, &block|
-        original.call(*args, **kwargs, &block)
-      end
-    end
-  end
-
   module ApiServiceStub
     def with_api_service(result: nil, error: nil)
       original = ExternalApiService.method(:new)
@@ -52,7 +34,6 @@ end
 
 module ActiveSupport
   class TestCase
-    include TestHelpers::HttpStub
     include TestHelpers::ApiServiceStub
 
     # Run tests in parallel with specified workers
