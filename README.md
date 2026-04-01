@@ -24,10 +24,19 @@ A Rails app for checking weather by US ZIP code or city using WeatherAPI.
 
 ## Architecture and SOLID
 
-The app applies SOLID principles in the forecast flow:
+The forecast flow was refactored with explicit SOLID responsibilities:
 
-- `WeatherController`: HTTP layer (input/output).
-- `Forecasts::FetchForecast`: business-rule and cache orchestration.
-- `Forecasts::CacheKey`: single responsibility for cache key generation.
+- **S (Single Responsibility)**:
+  - `WeatherController` handles only HTTP concerns (request/response, status, flash).
+  - `Forecasts::FetchForecast` handles orchestration (provider call + cache).
+  - `Forecasts::CacheKey` handles cache-key generation only.
+- **O (Open/Closed)**:
+  - `Forecasts::FetchForecast` is extendable via injected collaborators (`weather_provider`, `cache`, `forecast_factory`) without changing service logic.
+- **L (Liskov Substitution)**:
+  - Any object implementing `fetch_weather`, `fetch`, and `call` contracts can replace default collaborators.
+- **I (Interface Segregation)**:
+  - The service depends on small interfaces per collaborator, not broad concrete APIs.
+- **D (Dependency Inversion)**:
+  - Core flow depends on abstractions (behavior contracts) and receives concrete implementations at boundaries.
 
 Full documentation is available at [`docs/SOLID.md`](docs/SOLID.md).
